@@ -16,4 +16,17 @@
 
 `sudo cp JUDGEHOST_HOME/domjudge-source/misc-tools/create-cgroups.service /etc/systemd/system/create-cgroups.service`
 
+# Изменение адреса сервиса с которым работает judgehost
 
+Для изменения адреса сервера (напр. для domserver) нужно отредактировать файл JUDGEHOST_HOME/domjudge/judgehost/etc/restapi.secret.
+
+Если указать 2 сервера, то он будет поочерёдно отправлять запросы на каждый
+
+### Пример
+
+```
+# Randomly generated on host azat-desktop, Пт мая  1 01:35:08 MSK 2020
+# Format: '<ID> <API url> <user> <password>'
+first-server	http://localhost/domjudge/api	judgehost	judgehost
+second-server	http://192.168.0.2/domjudge/api	judgehost	judgehost
+```
