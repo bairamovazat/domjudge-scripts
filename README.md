@@ -1,6 +1,7 @@
 # Пример использования
-./setup-judgehost.sh  /home/ubuntu
-где /home/ubuntu - абсолютный путь, куда будет установлен judgehost
+./setup-judgehost.sh JUDGEHOST_HOME
+где JUDGEHOST_HOME - абсолютный путь, куда будет установлен judgehost (Например /home/ubuntu)
 
-В конце процесса, нужно изменить GRUB_CMDLINE_LINUX_DEFAULT в /etc/default/grub на:  
-GRUB_CMDLINE_LINUX_DEFAULT="quiet cgroup_enable=memory swapaccount=1"
+## ВНИМАНИЕ!
+Для точного ограничение по памяти (для JVM например) нужно обновить GRUB_CMDLINE_LINUX_DEFAULT в /etc/default/grub выполнить update-grub и перезагрузиться.
+После запустить JUDGEHOST_HOME/domjudge-source/misc-tools/create_cgroups
