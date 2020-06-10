@@ -10,5 +10,7 @@
 
 ` GRUB_CMDLINE_LINUX_DEFAULT="quiet cgroup_enable=memory swapaccount=1" `
 
-выполнить update-grub и перезагрузиться.
+Выполнить update-grub и перезагрузиться.
 После запустить JUDGEHOST_HOME/domjudge-source/misc-tools/create_cgroups
+
+Стоит учитывать, что на некоторых машинах (напр. AWS) GRUB_CMDLINE_LINUX_DEFAULT переопределяется в /etc/default/grub.d/
