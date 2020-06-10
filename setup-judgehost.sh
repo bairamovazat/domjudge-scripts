@@ -1,29 +1,17 @@
 #!/bin/bash
-
-package_check_and_install() {
-    pachage_name=$1
-
-    package_check "$pachage_name";
-
-    if [ "$package_check_result" -eq 0 ]; then
-	    printf "Установка пакета $pachage_name \n\n"
-	    sudo apt install $pachage_name
-    fi
-
+print_spaces() {
+    printf "      "
 }
 
-package_check() {
-	pachage_name=$1
-	
-	dpkg -s $pachage_name &> /dev/null;
+print_line() {
+    echo "////////////////////////////////////////"
+}
 
-	if [ $? -eq 0 ]; then
-    	echo "Пакет $pachage_name установлен!"
-    	package_check_result=1;
-	else
-    	echo "Пакет $pachage_name не установлен!"
-    	package_check_result=0;
-	fi
+print_in_frame() {
+	print_line
+    print_spaces
+    echo "$1"
+    print_line
 }
 
 replace_text() {
@@ -36,18 +24,20 @@ replace_text() {
 
 current_dir=$(pwd)
 
-echo "Начало установки judgehost"
+
+print_in_frame "Начало установки judgehost"
+
 
 if [ -z "$1" ]; then
-	echo "Первым аргументом нужно указать путь до папки с judgehost";
+	print_in_frame "Первым аргументом нужно указать путь до папки с judgehost";
 	exit
 fi
 
-echo "Обновление системы..."
+print_in_frame "Обновление системы..."
 
 sudo apt update
 
-echo "Обновление зависимостей..."
+print_in_frame "Обновление зависимостей..."
 
 sudo apt install -y zip unzip mariadb-server apache2 \
     php7.2 php7.2-fpm php7.2-cli \
@@ -59,16 +49,19 @@ sudo apt install -y zip unzip mariadb-server apache2 \
     texlive-latex-recommended texlive-latex-extra \
     texlive-fonts-recommended texlive-lang-european \
     python-pygments libcgroup-dev libcurl4-openssl-dev \
-    libjsoncpp-dev
+    libjsoncpp-dev make sudo debootstrap libcgroup-dev lsof \
+    php-cli php-curl php-json php-xml php-zip procps \
+    gcc g++ default-jre-headless default-jdk-headless \
+    ghc fp-compiler
 
 
 FILE=/tmp/domjudge-7.1.3.tar.gz
 if ! [ -f "$FILE" ]; then
-	echo "Загрузка domjudge"
+	print_in_frame "Загрузка domjudge"
     wget -P /tmp https://www.domjudge.org/releases/domjudge-7.1.3.tar.gz
 fi
 
-echo "Разархивация domjudge"
+print_in_frame "Разархивация domjudge"
 
 tar -C "$1" -xzf /tmp/domjudge-7.1.3.tar.gz
 
@@ -78,7 +71,7 @@ chmod -R a+rwx "$1"/domjudge-source
 
 cd "$1"/domjudge-source
 
-echo "Сборка domjudge"
+print_in_frame "Сборка domjudge"
 
 make dist
 
@@ -93,11 +86,16 @@ sudo make install-judgehost
 sudo chmod -R a+rwx "$1"/domjudge
 
 if ! [[ -n $(id -u domjudge-run 2>/dev/null) ]]; then
-	echo "Создание пользователя domjudge-run"
+	print_in_frame "Создание пользователя domjudge-run"
     sudo useradd -d /nonexistent -U -M -s /bin/false domjudge-run
 fi
 
+print_in_frame "Применение chroot"
+
+sudo "$1"/domjudge/judgehost/bin/dj_make_chroot
+
 sudo cp ./etc/sudoers-domjudge /etc/sudoers.d/sudoers-domjudge
 
+print_in_frame "Завершение установки. ВНИМАНИЕ! Не забудьте обновить /etc/default/grub"
 
 
